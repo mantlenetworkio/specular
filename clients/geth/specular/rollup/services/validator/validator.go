@@ -155,6 +155,8 @@ func (v *Validator) collectingLoop() {
 		select {
 		case ev := <-batchEventCh:
 			// New appendTxBatch call
+			log.Info(fmt.Sprintf("Get New Batch, batchNum: %s, startTxNum: %s, endTxNum: %s",
+				ev.BatchNumber, ev.StartTxNumber, ev.EndTxNumber))
 			tx, _, err := v.L1.TransactionByHash(v.Ctx, ev.Raw.TxHash)
 			if err != nil {
 				log.Error("Failed to get tx batch data", "error", err)
@@ -229,8 +231,10 @@ func (v *Validator) validationLoop(genesisRoot common.Hash) {
 					pendingBlocks = append(pendingBlocks, block)
 					txNum += int(ctx.NumTxs)
 				}
+				log.Info("preparing pendingBlocks, SequenceBlocks blockNUm: ", len(pendingBlocks))
 			case ev := <-assertionEventCh:
 				// New assertion created on Rollup
+				log.Info("Get New Assertion....")
 				assertion := &rollupTypes.Assertion{
 					ID:                ev.AssertionID,
 					VmHash:            ev.VmHash,
@@ -255,6 +259,7 @@ func (v *Validator) validationLoop(genesisRoot common.Hash) {
 				}
 				pendingBlocks = pendingBlocks[len(blocksToCommit):]
 				// Commit asserted blocks
+				log.Info("Commit Blocks....")
 				targetVmHash, targetGasUsed, err := v.commitBlocks(blocksToCommit)
 				if err != nil {
 					// strange error, TODO: rewind
@@ -265,6 +270,7 @@ func (v *Validator) validationLoop(genesisRoot common.Hash) {
 				if targetVmHash != assertion.VmHash || targetGasUsed.Cmp(assertion.CumulativeGasUsed) != 0 {
 					// Validation failed
 					// TODO: pause here and wait for challenge resolution
+					log.Info("Challenge Assertion....")
 					ourAssertion := &rollupTypes.Assertion{
 						VmHash:            targetVmHash,
 						InboxSize:         ev.InboxSize,
@@ -274,6 +280,7 @@ func (v *Validator) validationLoop(genesisRoot common.Hash) {
 					isInChallenge = true
 				} else {
 					// Validation succeeded, confirm assertion and advance stake
+					log.Info("Advance State....")
 					_, err = v.Rollup.AdvanceStake(ev.AssertionID)
 					if err != nil {
 						log.Crit("UNHANDELED: Can't advance stake, validator state corrupted", "err", err)

@@ -25,7 +25,6 @@ func TestRollup(t *testing.T) {
 			txCount++
 			transferETH(t, mustGetL2Client(t), User1PrivateKey, User1Address, User2Address, DECIMAL000_1)
 			wg.Done()
-
 		}
 	}()
 	wg.Wait()
@@ -64,7 +63,7 @@ func TestRollup(t *testing.T) {
 
 	// subscribe ConfirmFirstUnresolvedAssertion called
 	confirmedCh := make(chan *bindings.IRollupAssertionConfirmed, 64)
-	confirmedSub, err := Rollup.WatchAssertionConfirmed(&bind.WatchOpts{}, confirmedCh)
+	confirmedSub, err := Rollup.WatchAssertionConfirmed(&bind.WatchOpts{Context: l1ctx}, confirmedCh)
 	require.NoError(t, err)
 	defer confirmedSub.Unsubscribe()
 	select {
