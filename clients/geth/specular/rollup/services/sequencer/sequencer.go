@@ -1,6 +1,7 @@
 package sequencer
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -146,7 +147,7 @@ func (s *Sequencer) sequencingLoop(genesisRoot common.Hash) {
 		select {
 		case batch := <-s.batchCh:
 			// New batch from Batcher
-			log.Debug("Batch", "length", len(batch.Txs))
+			log.Info("Get New Batch", "length", len(batch.Txs))
 			// Sequence batch to SequencerInbox
 			contexts, txLengths, txs, err := batch.SerializeToArgs()
 			if err != nil {
@@ -165,12 +166,16 @@ func (s *Sequencer) sequencingLoop(genesisRoot common.Hash) {
 			queuedAssertion.EndBlock = batch.LastBlockNumber()
 			// If no assertion is pending, commit it
 			if pendingAssertion == nil {
+				log.Info("commitAssertion.....")
 				commitAssertion()
 			}
 		case ev := <-createdCh:
 			// New assertion created on L1 Rollup
+			log.Info(fmt.Sprintf("Get New Assertion, AssertionID: %s AsserterAddress: %s",
+				ev.AssertionID.String()), ev.AsserterAddr.String())
 			if common.Address(ev.AsserterAddr) == s.Config.Coinbase {
 				if ev.VmHash == pendingAssertion.VmHash {
+					log.Info("confirmAssertion.....")
 					// If assertion is created by us, get ID and deadline
 					pendingAssertion.ID = ev.AssertionID
 					pendingAssertion.Deadline, err = s.AssertionMap.GetDeadline(ev.AssertionID)
@@ -252,9 +257,11 @@ func (s *Sequencer) confirmationLoop() {
 			select {
 			case header := <-headCh:
 				// New block mined on L1
+				log.Info("sequencer sync new layer1 block...")
 				if !pendingConfirmationSent && !pendingConfirmed {
 					if header.Number.Uint64() >= pendingAssertion.Deadline.Uint64() {
 						// Confirmation period has past, confirm it
+						log.Info("call ConfirmFirstUnresolvedAssertion...")
 						_, err := s.Rollup.ConfirmFirstUnresolvedAssertion()
 						if err != nil {
 							// log.Error("Failed to confirm DA", "error", err)
@@ -279,6 +286,7 @@ func (s *Sequencer) confirmationLoop() {
 					log.Error("Got another DA request before current is confirmed")
 					continue
 				}
+				log.Info("confirmAssertion setup states.....")
 				pendingAssertion = newPendingAssertion.Copy()
 				pendingConfirmationSent = false
 				pendingConfirmed = false

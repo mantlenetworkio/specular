@@ -2,7 +2,10 @@ module github.com/specularl2/specular/clients/geth/specular
 
 go 1.19
 
-replace github.com/ethereum/go-ethereum => ../go-ethereum
+replace (
+	github.com/ethereum/go-ethereum => ../go-ethereum
+	github.com/specularl2/specular/clients/geth/specular => ./
+)
 
 require (
 	github.com/cbergoon/merkletree v0.2.0

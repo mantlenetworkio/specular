@@ -35,6 +35,8 @@ interface IRollup {
 
     event AssertionRejected(uint256 assertionID);
 
+    event AdvanceStake(uint256 assertionID);
+
     function assertions() external view returns (AssertionMap);
 
     /**

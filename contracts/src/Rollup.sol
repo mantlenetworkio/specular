@@ -175,6 +175,7 @@ contract Rollup is RollupBase {
         // TODO: allow arbitrary descendant of current staked assertionID, not just child.
         require(staker.assertionID == assertions.getParentID(assertionID), "PARENT_ASSERTION_UNSTAKED");
         stakeOnAssertion(msg.sender, assertionID);
+        emit AdvanceStake(assertionID);
     }
 
     /// @inheritdoc IRollup

@@ -17,7 +17,7 @@
     },
     {
       "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
-      "txHash": "0x4308636a2e78974b6f04db482c1727025c310e84a17d4021c3c9d3b793c906f2",
+      "txHash": "0xd3c7a5b30720cf681497191f35baae3397debd0fe948f2bc2a9f29f4552a6b0e",
       "kind": "transparent"
     }
   ],
@@ -134,9 +134,9 @@
         }
       }
     },
-    "f2768aa2eb9910de815bf151cdea261c22859f88202ce7e302f1f8685a7a487f": {
+    "107c9a036446f71cd4bea3901957cc60162d74e0d6a5ae7e279519c9cca0d093": {
       "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-      "txHash": "0x6dd26c3030f6e305ecb9df334aad67a502a182ae2d998f09e2f6417c2894c8bc",
+      "txHash": "0x0d4462e3b646d7f8e030a0066ff2bb5a99ae62212208f33b41e49367bb90f071",
       "layout": {
         "solcVersion": "0.8.4",
         "storage": [
@@ -217,7 +217,7 @@
             "label": "sequencerInbox",
             "offset": 0,
             "slot": "8",
-            "type": "t_contract(ISequencerInbox)939",
+            "type": "t_contract(ISequencerInbox)943",
             "contract": "RollupBase",
             "src": "src/Rollup.sol:45"
           },
@@ -233,7 +233,7 @@
             "label": "verifier",
             "offset": 0,
             "slot": "10",
-            "type": "t_contract(IVerifier)3183",
+            "type": "t_contract(IVerifier)3191",
             "contract": "RollupBase",
             "src": "src/Rollup.sol:47"
           },
@@ -273,7 +273,7 @@
             "label": "stakers",
             "offset": 0,
             "slot": "15",
-            "type": "t_mapping(t_address,t_struct(Staker)987_storage)",
+            "type": "t_mapping(t_address,t_struct(Staker)991_storage)",
             "contract": "Rollup",
             "src": "src/Rollup.sol:75"
           },
@@ -289,7 +289,7 @@
             "label": "zombies",
             "offset": 0,
             "slot": "17",
-            "type": "t_array(t_struct(Zombie)992_storage)dyn_storage",
+            "type": "t_array(t_struct(Zombie)996_storage)dyn_storage",
             "contract": "Rollup",
             "src": "src/Rollup.sol:77"
           }
@@ -299,7 +299,7 @@
             "label": "address",
             "numberOfBytes": "20"
           },
-          "t_array(t_struct(Zombie)992_storage)dyn_storage": {
+          "t_array(t_struct(Zombie)996_storage)dyn_storage": {
             "label": "struct RollupBase.Zombie[]",
             "numberOfBytes": "32"
           },
@@ -315,15 +315,15 @@
             "label": "contract IERC20",
             "numberOfBytes": "20"
           },
-          "t_contract(ISequencerInbox)939": {
+          "t_contract(ISequencerInbox)943": {
             "label": "contract ISequencerInbox",
             "numberOfBytes": "20"
           },
-          "t_contract(IVerifier)3183": {
+          "t_contract(IVerifier)3191": {
             "label": "contract IVerifier",
             "numberOfBytes": "20"
           },
-          "t_mapping(t_address,t_struct(Staker)987_storage)": {
+          "t_mapping(t_address,t_struct(Staker)991_storage)": {
             "label": "mapping(address => struct RollupBase.Staker)",
             "numberOfBytes": "32"
           },
@@ -331,7 +331,7 @@
             "label": "mapping(address => uint256)",
             "numberOfBytes": "32"
           },
-          "t_struct(Staker)987_storage": {
+          "t_struct(Staker)991_storage": {
             "label": "struct RollupBase.Staker",
             "members": [
               {
@@ -361,7 +361,7 @@
             ],
             "numberOfBytes": "128"
           },
-          "t_struct(Zombie)992_storage": {
+          "t_struct(Zombie)996_storage": {
             "label": "struct RollupBase.Zombie",
             "members": [
               {
