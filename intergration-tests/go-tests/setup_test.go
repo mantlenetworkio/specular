@@ -41,10 +41,14 @@ var (
 	User2Address = common.HexToAddress("0x70997970c51812dc3a010c7d01b50e0d17dc79c8")
 	User3Address = common.HexToAddress("0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc")
 
-	Inbox         *bindings.ISequencerInbox
-	Rollup        *bindings.IRollup
-	InboxAddress  = common.HexToAddress("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0")
-	RollupAddress = common.HexToAddress("0x0165878A594ca255338adfa4d48449f69242Eb8F")
+	Inbox               *bindings.ISequencerInbox
+	Rollup              *bindings.IRollup
+	Challenge           *bindings.IChallenge
+	AssertionMap        *bindings.AssertionMap
+	InboxAddress        = common.HexToAddress("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0")
+	RollupAddress       = common.HexToAddress("0x0165878A594ca255338adfa4d48449f69242Eb8F")
+	ChallengeAddress    = common.HexToAddress("0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9")
+	AssertionMapAddress = common.HexToAddress("")
 )
 
 func init() {
@@ -61,6 +65,16 @@ func init() {
 		panic(err)
 	}
 	if Rollup, err = bindings.NewIRollup(RollupAddress, l1Client); err != nil {
+		panic(err)
+	}
+	if Challenge, err = bindings.NewIChallenge(ChallengeAddress, l1Client); err != nil {
+		panic(err)
+	}
+
+	if AssertionMapAddress, err = Rollup.Assertions(&bind.CallOpts{Context: l1ctx}); err != nil || len(AssertionMapAddress.String()) == 0 {
+		panic(err.Error() + AssertionMapAddress.String())
+	}
+	if AssertionMap, err = bindings.NewAssertionMap(AssertionMapAddress, l1Client); err != nil {
 		panic(err)
 	}
 }
@@ -131,10 +145,33 @@ func transferETH(t *testing.T, client *ethclient.Client, senderPrivKey string, f
 	t.Log("tx hash: ", signedTx.Hash())
 }
 
-func checkOrResetStakeAssertion(assertionID *big.Int, address common.Address, privateKey string) {
+func checkOrResetStakeAssertion(t *testing.T, address common.Address, privateKey string) {
+	var isStaked bool
+	var err error
+	isStaked, err = Rollup.IsStaked(&bind.CallOpts{Context: l1ctx}, address)
+	require.NoError(t, err)
 
+	if !isStaked {
+		privateKey, err := crypto.HexToECDSA(privateKey)
+		require.NoError(t, err)
+
+		chainID, err := l1Client.NetworkID(context.Background())
+		require.NoError(t, err)
+
+		stakeOpts, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
+		require.NoError(t, err)
+		stakeOpts.Value = big.NewInt(DECIMAL0_1)
+		stakeOpts.GasPrice = big.NewInt(1)
+		stakeOpts.Context = l1ctx
+
+		tx, err := Rollup.Stake(stakeOpts)
+		require.NoError(t, err)
+
+		t.Log("tx hash: ", tx.Hash())
+	}
 }
 
-func createFakeAssertion(assertionID *big.Int, modifyOpIndex *big.Int) {
-
+func createFakeAssertion(assertion *bindings.IRollupAssertionCreated) *bindings.IRollupAssertionCreated {
+	assertion.L2GasUsed.Add(assertion.L2GasUsed, big.NewInt(1))
+	return assertion
 }

@@ -351,7 +351,7 @@ func (v *Validator) challengeLoop() {
 					continue
 				}
 				// If it's our turn
-				if responder != common.Address(v.Config.Coinbase) {
+				if responder == common.Address(v.Config.Coinbase) {
 					err := services.RespondBisection(v.BaseService, abi, challengeSession, ev, states, ctx.opponentAssertion.VmHash, false)
 					if err != nil {
 						// TODO: error handling
