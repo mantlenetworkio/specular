@@ -1,6 +1,5 @@
 #/bin/bash
 BASEDIR="../.."
-OPS="$BASEDIR/ops"
 ARTIFACT="$BASEDIR/packages/contracts/artifacts"
 CONTRACTS="$ARTIFACT/contracts"
 WORKDIR="./contracts"
